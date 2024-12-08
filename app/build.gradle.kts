@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -16,10 +18,17 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val keystoreFile = project.rootProject.file("api.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+        val apiKey = properties.getProperty("API_KEY") ?: ""
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "API_KEY", "\"${apiKey}\"")
     }
 
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
     buildTypes {
