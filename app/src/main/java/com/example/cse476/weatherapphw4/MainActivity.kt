@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         this.model.networkState.observe(this) { state ->
             this.binding.progressStatus.text = "Connected fetching data from API"
-            this.model.initializeData()
+            this.model.initializeDataFromLocation()
         }
 
         this.model.isLoading.observe(this) { loading ->
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun locationProvided() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            this.model.startLocationService()
+            this.model.initializeDataFromLocation()
             return
         }
 
