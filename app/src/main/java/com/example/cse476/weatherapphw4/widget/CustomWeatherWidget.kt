@@ -9,7 +9,7 @@ import java.util.Locale
 
 class CustomWeatherWidget(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet? = null
 ) : MaterialCardView(context, attrs) {
     private val binding: WeatherCardWidgetBinding
 

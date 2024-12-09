@@ -1,6 +1,8 @@
 package com.example.cse476.weatherapphw4
 
 import android.os.Bundle
+import android.util.AttributeSet
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +12,7 @@ import com.example.cse476.weatherapphw4.databinding.ActivityMainBinding
 import com.example.cse476.weatherapphw4.extensions.capitalizeEveryWord
 import com.example.cse476.weatherapphw4.extensions.toUIString
 import com.example.cse476.weatherapphw4.viewmodel.WeatherViewModel
+import com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,6 +37,23 @@ class WeatherActivity : AppCompatActivity() {
 
         this.model.todayWeatherStatus.observe(this) { status ->
             this.binding.todayWeatherDescriptionTextView.text = status?.capitalizeEveryWord() ?: "NaN"
+        }
+
+        this.model.weeklyDataInformation.observe(this) { weeklyData ->
+            this.binding.weatherWidgetContainer.removeAllViews()
+            for (data in weeklyData) {
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(5, 5, 5, 5)
+                val weatherWidget = CustomWeatherWidget(this, null)
+                weatherWidget.layoutParams = params
+                weatherWidget.setDayText(data.day)
+                weatherWidget.setTemp(data.minTemp, data.maxTemp)
+                weatherWidget.setWeatherText(data.weatherDescription)
+                this.binding.weatherWidgetContainer.addView(weatherWidget)
+            }
         }
     }
 }
