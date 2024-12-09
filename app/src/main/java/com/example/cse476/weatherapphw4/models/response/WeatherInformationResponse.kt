@@ -7,9 +7,7 @@ data class WeatherResponse(
     val clouds: Clouds,
     val wind: Wind,
     val visibility: Double,
-    val pop: Double,
-    val sys: Sys,
-    val dt_txt: String
+    val pop: Double
 )
 
 data class Main(
@@ -20,8 +18,7 @@ data class Main(
     val pressure: Double,
     val sea_level: Double,
     val grnd_level: Double,
-    val humidity: Double,
-    val temp_kf: Double
+    val humidity: Double
 )
 
 data class Clouds (
@@ -32,10 +29,6 @@ data class Wind (
     val speed: Double,
     val deg: Double,
     val gust: Double,
-)
-
-data class Sys (
-    val pod: String
 )
 
 data class Weather(
