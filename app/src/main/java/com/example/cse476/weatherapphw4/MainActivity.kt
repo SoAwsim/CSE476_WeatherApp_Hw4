@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         this.binding = LoadingScreenBinding.inflate(this.layoutInflater)
-        setContentView(R.layout.loading_screen)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.loading)) { v, insets ->
+        setContentView(this.binding.loading)
+        ViewCompat.setOnApplyWindowInsetsListener(this.binding.loading) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
