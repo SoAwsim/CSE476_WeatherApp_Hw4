@@ -7,31 +7,23 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.cse476.weatherapphw4.BuildConfig
 import com.example.cse476.weatherapphw4.models.network.NetworkMonitor
-import com.example.cse476.weatherapphw4.models.repository.WeatherRepository
-import com.example.cse476.weatherapphw4.models.response.WeatherApiResponse
 import com.example.cse476.weatherapphw4.models.service.LocationService
-import com.google.gson.Gson
+import com.example.cse476.weatherapphw4.models.service.WeatherService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
 class LoadingViewModel @Inject constructor(
     application: Application,
-    private val repository: WeatherRepository,
+    private val weatherService: WeatherService,
     private val locationService: LocationService
 ) : AndroidViewModel(application) {
     companion object {
         private const val TAG = "LoadingViewModel"
-        private const val WEATHER_API =
-            "https://api.openweathermap.org/data/2.5/forecast?appid=" + BuildConfig.API_KEY
     }
 
     private val _isLoading = MutableLiveData(true)
@@ -53,34 +45,11 @@ class LoadingViewModel @Inject constructor(
                 return@launch
             }
 
-            val response = this@LoadingViewModel.fetchApiResponse()
-            if (response == null)
+            weatherService.fetchDataFromApi(this@LoadingViewModel.locationService.location)
+            if (this@LoadingViewModel.weatherService.weatherMapByDate.isEmpty())
                 return@launch
             this@LoadingViewModel._isLoading.value = false
         }
-    }
-
-    private suspend fun fetchApiResponse(): WeatherApiResponse? = withContext(Dispatchers.IO) {
-        var reader: BufferedReader? = null
-        try {
-            val connection = URL(
-                WEATHER_API + "&lat=" + this@LoadingViewModel.locationService.location?.latitude +
-                        "&lon=" + this@LoadingViewModel.locationService.location?.longitude).openConnection()
-            connection.connect()
-            reader = BufferedReader(InputStreamReader(connection.inputStream))
-            val response = StringBuilder()
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                response.append(line)
-            }
-            val gson = Gson()
-            return@withContext gson.fromJson(response.toString(), WeatherApiResponse::class.java)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to get response from API", e)
-        } finally {
-            reader?.close()
-        }
-        return@withContext null
     }
 
     suspend fun getBestLocation() = withContext(Dispatchers.Main) {
