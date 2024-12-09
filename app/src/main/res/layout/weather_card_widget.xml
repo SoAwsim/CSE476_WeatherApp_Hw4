@@ -5,63 +5,76 @@
     android:layout_height="wrap_content"
     style="@style/Widget.Material3.CardView.Filled" >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none" >
 
-        <TextView
-            android:id="@+id/dayTextView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Day"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/weatherImageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content" >
 
-        <ImageView
-            android:id="@+id/weatherImageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_launcher_foreground"
-            app:layout_constraintBottom_toBottomOf="@id/weatherDescriptionTextView"
-            app:layout_constraintEnd_toStartOf="@id/minTempTextView"
-            app:layout_constraintStart_toEndOf="@id/dayTextView"
-            app:layout_constraintTop_toTopOf="@id/weatherDescriptionTextView" />
+            <TextView
+                android:id="@+id/dayTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Day"
+                android:textSize="24sp"
+                android:layout_margin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/weatherImageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/minTempTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Min Temp"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/maxTempTextView"
-            app:layout_constraintStart_toEndOf="@id/weatherImageView"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/weatherImageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:src="@drawable/ic_launcher_foreground"
+                app:layout_constraintBottom_toBottomOf="@id/weatherDescriptionTextView"
+                app:layout_constraintEnd_toStartOf="@id/minTempTextView"
+                app:layout_constraintStart_toEndOf="@id/dayTextView"
+                app:layout_constraintTop_toTopOf="@id/weatherDescriptionTextView" />
 
-        <TextView
-            android:id="@+id/maxTempTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Max Temp"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/weatherDescriptionTextView"
-            app:layout_constraintStart_toEndOf="@id/minTempTextView"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/minTempTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Min Temp"
+                android:textSize="24sp"
+                android:layout_margin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/maxTempTextView"
+                app:layout_constraintStart_toEndOf="@id/weatherImageView"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/weatherDescriptionTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weather"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/maxTempTextView"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/maxTempTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Temp"
+                android:textSize="24sp"
+                android:layout_margin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/weatherDescriptionTextView"
+                app:layout_constraintStart_toEndOf="@id/minTempTextView"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/weatherDescriptionTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weather"
+                android:textSize="24sp"
+                android:layout_margin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/maxTempTextView"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </HorizontalScrollView>
 
 </com.google.android.material.card.MaterialCardView>
