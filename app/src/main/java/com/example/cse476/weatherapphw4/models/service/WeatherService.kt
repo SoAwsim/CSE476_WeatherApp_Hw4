@@ -42,7 +42,9 @@ class WeatherService @Inject constructor() {
             }
             val gson = Gson()
             val parsedResponse = gson.fromJson(response.toString(), WeatherApiResponse::class.java)
-            this@WeatherService.weatherMapByDate = parsedResponse.list.groupBy {
+            this@WeatherService.weatherMapByDate = parsedResponse.list.sortedBy {
+                it.dt
+            }.groupBy {
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = it.dt * 1000L
                 calendar.get(Calendar.DAY_OF_WEEK)
