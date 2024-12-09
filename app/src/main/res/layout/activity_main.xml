@@ -16,10 +16,6 @@
             android:id="@+id/mainCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/day1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.45"
             android:layout_margin="5dp" >
 
@@ -64,42 +60,5 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
-
-        <com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
-            android:id="@+id/day1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
-            android:id="@+id/day2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
-            android:id="@+id/day3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
-            android:id="@+id/day4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
-            android:id="@+id/day5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
-            android:id="@+id/day6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
     </LinearLayout>
 </ScrollView>
