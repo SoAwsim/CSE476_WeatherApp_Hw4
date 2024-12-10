@@ -38,9 +38,13 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        this.model.networkState.observe(this) { state ->
-            this.binding.progressStatus.text = "Connected fetching data from API"
-            this.model.initializeDataFromLocation()
+        this.model.networkState.observe(this) { connected ->
+            if (connected) {
+                this.binding.progressStatus.text = "Connected fetching data from API"
+                this.model.initializeDataFromLocation()
+            } else {
+                this.binding.progressStatus.text = "Waiting for connection"
+            }
         }
 
         this.model.isLoading.observe(this) { loading ->
