@@ -1,5 +1,6 @@
 package com.example.cse476.weatherapphw4.extensions
 
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -10,7 +11,7 @@ fun Double?.toUIString(): String {
     if (ceil(this) == floor(this))
         return this.toLong().toString()
 
-    return this.toString()
+    return String.format(Locale.US, "%.1f", this)
 }
 
 fun Double.kelvinToCelsius(): Double {
