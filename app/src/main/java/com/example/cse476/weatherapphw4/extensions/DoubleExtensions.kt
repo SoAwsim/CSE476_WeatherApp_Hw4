@@ -12,3 +12,11 @@ fun Double?.toUIString(): String {
 
     return this.toString()
 }
+
+fun Double.kelvinToCelsius(): Double {
+    return this - 273.15
+}
+
+fun Double.kelvinToFahrenheit(): Double {
+    return this * 1.8 - 459.67
+}
