@@ -11,6 +11,7 @@ import com.example.cse476.weatherapphw4.extensions.convertFromCalendarEnum
 import com.example.cse476.weatherapphw4.service.LocationService
 import com.example.cse476.weatherapphw4.service.WeatherService
 import com.example.cse476.weatherapphw4.models.ui.WeeklyDataInformation
+import com.example.cse476.weatherapphw4.service.SettingsService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     application: Application,
     private val weatherService: WeatherService,
-    private val locationService: LocationService
+    private val locationService: LocationService,
+    private val settingsService: SettingsService
 ) : AndroidViewModel(application) {
     companion object {
         const val TAG = "WeatherViewModel"
@@ -35,6 +37,8 @@ class WeatherViewModel @Inject constructor(
 
     private val _weeklyWeatherInformation = MutableLiveData<List<WeeklyDataInformation>>()
     val weeklyDataInformation: LiveData<List<WeeklyDataInformation>> = this._weeklyWeatherInformation
+
+    val tempUnit = this.settingsService.tempUnit
 
     init {
         this.transformWeatherData()
@@ -84,5 +88,10 @@ class WeatherViewModel @Inject constructor(
             weatherInformationList.add(weatherInfo)
         }
         this._weeklyWeatherInformation.value = weatherInformationList
+    }
+
+    fun triggerTempUpdate() {
+        this._todayTemp.value = this._todayTemp.value
+        this._weeklyWeatherInformation.value = this._weeklyWeatherInformation.value
     }
 }

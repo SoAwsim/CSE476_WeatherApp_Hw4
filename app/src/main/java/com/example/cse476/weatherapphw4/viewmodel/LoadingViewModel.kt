@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cse476.weatherapphw4.network.NetworkMonitor
 import com.example.cse476.weatherapphw4.service.LocationService
+import com.example.cse476.weatherapphw4.service.SettingsService
 import com.example.cse476.weatherapphw4.service.WeatherService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,22 +22,26 @@ import javax.inject.Inject
 class LoadingViewModel @Inject constructor(
     application: Application,
     private val weatherService: WeatherService,
-    private val locationService: LocationService
+    private val locationService: LocationService,
+    private val settingsService: SettingsService
 ) : AndroidViewModel(application) {
     companion object {
         private const val TAG = "LoadingViewModel"
     }
 
-    private val _isLoading = MutableLiveData(true)
-    val isLoading: LiveData<Boolean> = this._isLoading
-
-    private val _networkMonitor =
-        NetworkMonitor(this.getApplication<Application>().applicationContext)
-    val networkState: LiveData<Boolean> = this._networkMonitor.networkState
+    private val networkMonitor: NetworkMonitor
 
     init {
-        this._networkMonitor.startMonitoringNetwork()
+        val context = this.getApplication<Application>().applicationContext
+        this.networkMonitor = NetworkMonitor(context)
+        this.networkMonitor.startMonitoringNetwork()
+        this.settingsService.initializeSettings(context)
     }
+
+    val networkState = this.networkMonitor.networkState
+
+    private val _isLoading = MutableLiveData(true)
+    val isLoading: LiveData<Boolean> = this._isLoading
 
     fun initializeDataFromLocation() {
         viewModelScope.launch {

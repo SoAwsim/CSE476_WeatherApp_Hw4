@@ -5,8 +5,11 @@ import android.graphics.Bitmap
 import android.util.AttributeSet
 import com.example.cse476.weatherapphw4.R
 import com.example.cse476.weatherapphw4.databinding.WeatherCardWidgetBinding
+import com.example.cse476.weatherapphw4.enums.TempUnit
+import com.example.cse476.weatherapphw4.extensions.kelvinToCelsius
+import com.example.cse476.weatherapphw4.extensions.kelvinToFahrenheit
+import com.example.cse476.weatherapphw4.extensions.toUIString
 import com.google.android.material.card.MaterialCardView
-import java.util.Locale
 
 class CustomWeatherWidget(
     context: Context,
@@ -27,9 +30,25 @@ class CustomWeatherWidget(
         this.binding.dayTextView.text = day;
     }
 
-    fun setTemp(minTemp: Double, maxTemp: Double) {
-        this.binding.minTempTextView.text = String.format(Locale.US, "%.1f", minTemp)
-        this.binding.maxTempTextView.text = String.format(Locale.US, "%.1f", maxTemp)
+    fun setTemp(minTemp: Double, maxTemp: Double, unit: TempUnit) {
+        val minUnitTemp: Double
+        val maxUnitTemp: Double
+        when (unit){
+            TempUnit.Celsius -> {
+                minUnitTemp = minTemp.kelvinToCelsius()
+                maxUnitTemp = maxTemp.kelvinToCelsius()
+            }
+            TempUnit.Fahrenheit -> {
+                minUnitTemp = minTemp.kelvinToFahrenheit()
+                maxUnitTemp = maxTemp.kelvinToFahrenheit()
+            }
+            TempUnit.Kelvin -> {
+                minUnitTemp = minTemp
+                maxUnitTemp = maxTemp
+            }
+        }
+        this.binding.minTempTextView.text = minUnitTemp.toUIString()
+        this.binding.maxTempTextView.text = maxUnitTemp.toUIString()
     }
 
     fun setImage(image: Bitmap?) {

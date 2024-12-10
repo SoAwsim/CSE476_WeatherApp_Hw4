@@ -8,7 +8,10 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.cse476.weatherapphw4.databinding.FragmentWeatherMainBinding
+import com.example.cse476.weatherapphw4.enums.TempUnit
 import com.example.cse476.weatherapphw4.extensions.capitalizeEveryWord
+import com.example.cse476.weatherapphw4.extensions.kelvinToCelsius
+import com.example.cse476.weatherapphw4.extensions.kelvinToFahrenheit
 import com.example.cse476.weatherapphw4.extensions.toUIString
 import com.example.cse476.weatherapphw4.viewmodel.WeatherViewModel
 import com.example.cse476.weatherapphw4.widget.CustomWeatherWidget
@@ -26,7 +29,13 @@ class WeatherMainFragment : Fragment() {
         this.binding = FragmentWeatherMainBinding.inflate(this.layoutInflater)
 
         this.model.todayTemp.observe(viewLifecycleOwner) { temp ->
-            this.binding?.todayWeatherTempTextView?.text = temp.toUIString()
+            val unit = this.model.tempUnit.value ?: TempUnit.Celsius
+            val tempWithUnit: Double? = when (unit) {
+                TempUnit.Celsius -> temp?.kelvinToCelsius()
+                TempUnit.Fahrenheit -> temp?.kelvinToFahrenheit()
+                TempUnit.Kelvin -> temp
+            }
+            this.binding?.todayWeatherTempTextView?.text = tempWithUnit?.toUIString()
         }
 
         this.model.todayWeatherStatus.observe(viewLifecycleOwner) { status ->
@@ -48,11 +57,19 @@ class WeatherMainFragment : Fragment() {
                 val weatherWidget = CustomWeatherWidget(this.requireContext(), null)
                 weatherWidget.layoutParams = params
                 weatherWidget.setDayText(data.day)
-                weatherWidget.setTemp(data.minTemp, data.maxTemp)
+                weatherWidget.setTemp(
+                    data.minTemp,
+                    data.maxTemp,
+                    this.model.tempUnit.value ?: TempUnit.Celsius
+                )
                 weatherWidget.setWeatherText(data.weatherDescription)
                 weatherWidget.setImage(data.image)
                 this.binding?.weatherWidgetContainer?.addView(weatherWidget)
             }
+        }
+
+        this.model.tempUnit.observe(viewLifecycleOwner) {
+            this.model.triggerTempUpdate()
         }
 
         return this.binding?.root
