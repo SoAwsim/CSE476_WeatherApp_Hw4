@@ -1,4 +1,4 @@
-package com.example.cse476.weatherapphw4.models.service
+package com.example.cse476.weatherapphw4.service
 
 import android.Manifest
 import android.content.Context

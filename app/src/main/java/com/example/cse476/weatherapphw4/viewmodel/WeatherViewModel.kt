@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.cse476.weatherapphw4.extensions.capitalizeEveryWord
 import com.example.cse476.weatherapphw4.extensions.convertFromCalendarEnum
-import com.example.cse476.weatherapphw4.models.service.LocationService
-import com.example.cse476.weatherapphw4.models.service.WeatherService
+import com.example.cse476.weatherapphw4.service.LocationService
+import com.example.cse476.weatherapphw4.service.WeatherService
 import com.example.cse476.weatherapphw4.models.ui.WeeklyDataInformation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

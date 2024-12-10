@@ -1,4 +1,4 @@
-package com.example.cse476.weatherapphw4.models.network
+package com.example.cse476.weatherapphw4.network
 
 import android.content.Context
 import android.net.ConnectivityManager

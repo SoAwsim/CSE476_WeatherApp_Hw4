@@ -8,9 +8,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.cse476.weatherapphw4.models.network.NetworkMonitor
-import com.example.cse476.weatherapphw4.models.service.LocationService
-import com.example.cse476.weatherapphw4.models.service.WeatherService
+import com.example.cse476.weatherapphw4.network.NetworkMonitor
+import com.example.cse476.weatherapphw4.service.LocationService
+import com.example.cse476.weatherapphw4.service.WeatherService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
