@@ -52,6 +52,8 @@ android {
 dependencies {
     implementation(libs.gson.v2110)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     kapt(libs.hilt.android.compiler)
     implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
