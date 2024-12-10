@@ -1,6 +1,7 @@
 package com.example.cse476.weatherapphw4.widget
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import com.example.cse476.weatherapphw4.R
 import com.example.cse476.weatherapphw4.databinding.WeatherCardWidgetBinding
@@ -29,5 +30,9 @@ class CustomWeatherWidget(
     fun setTemp(minTemp: Double, maxTemp: Double) {
         this.binding.minTempTextView.text = String.format(Locale.US, "%.1f", minTemp)
         this.binding.maxTempTextView.text = String.format(Locale.US, "%.1f", maxTemp)
+    }
+
+    fun setImage(image: Bitmap?) {
+        this.binding.weatherImageView.setImageBitmap(image)
     }
 }

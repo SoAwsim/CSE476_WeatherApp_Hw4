@@ -1,6 +1,7 @@
 package com.example.cse476.weatherapphw4.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.location.LocationManager
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -39,21 +40,21 @@ class LoadingViewModel @Inject constructor(
 
     fun initializeDataFromLocation() {
         viewModelScope.launch {
-            this@LoadingViewModel.getBestLocation()
+            val context = this@LoadingViewModel.getApplication<Application>().applicationContext
+            this@LoadingViewModel.getBestLocation(context)
             if (this@LoadingViewModel.locationService.location == null) {
                 Log.e(TAG, "Location service failed!")
                 return@launch
             }
 
-            weatherService.fetchDataFromApi(this@LoadingViewModel.locationService.location)
+            weatherService.fetchDataFromApi(this@LoadingViewModel.locationService.location, context)
             if (this@LoadingViewModel.weatherService.weatherMapByDate.isEmpty())
                 return@launch
             this@LoadingViewModel._isLoading.value = false
         }
     }
 
-    suspend fun getBestLocation() = withContext(Dispatchers.Main) {
-        val context = this@LoadingViewModel.getApplication<Application>().applicationContext
+    suspend fun getBestLocation(context: Context) = withContext(Dispatchers.Main) {
         val gpsLocation = try {
             this@LoadingViewModel.locationService.getCurrentLocation(context, LocationManager.GPS_PROVIDER)
         } catch (e: Exception) {

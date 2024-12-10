@@ -39,6 +39,10 @@ class WeatherActivity : AppCompatActivity() {
             this.binding.todayWeatherDescriptionTextView.text = status?.capitalizeEveryWord() ?: "NaN"
         }
 
+        this.model.todayWeatherBitmapImage.observe(this) { image ->
+            this.binding.todayWeatherImageView.setImageBitmap(image)
+        }
+
         this.model.weeklyDataInformation.observe(this) { weeklyData ->
             this.binding.weatherWidgetContainer.removeAllViews()
             for (data in weeklyData) {
@@ -52,6 +56,7 @@ class WeatherActivity : AppCompatActivity() {
                 weatherWidget.setDayText(data.day)
                 weatherWidget.setTemp(data.minTemp, data.maxTemp)
                 weatherWidget.setWeatherText(data.weatherDescription)
+                weatherWidget.setImage(data.image)
                 this.binding.weatherWidgetContainer.addView(weatherWidget)
             }
         }

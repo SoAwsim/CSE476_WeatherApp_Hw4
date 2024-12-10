@@ -61,6 +61,8 @@ class WeatherViewModel @Inject constructor(
 
         this._todayTemp.value = currentTimeWeather.main.temp
         this._todayWeatherStatus.value = currentTimeWeather.weather.firstOrNull()?.description
+        this._todayWeatherBitmapImage.value = this.weatherService
+            .iconMap[currentTimeWeather.weather.first().icon]
 
         val weatherInformationList: MutableList<WeeklyDataInformation> = mutableListOf()
         for (dayInformation in weatherData) {
@@ -70,9 +72,11 @@ class WeatherViewModel @Inject constructor(
             val weatherDescription = weatherEntries.map { it.weather.first().description }
                 .first().capitalizeEveryWord()
             val day = dayInformation.key.convertFromCalendarEnum()
+            val image = this.weatherService
+                .iconMap[weatherEntries.map { it.weather.first().icon }.first()]
             val weatherInfo = WeeklyDataInformation(
                 day,
-                null,
+                image,
                 minTemp,
                 maxTemp,
                 weatherDescription
