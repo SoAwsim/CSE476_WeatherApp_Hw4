@@ -2,10 +2,9 @@ package com.example.cse476.weatherapphw4.models.ui
 
 import android.graphics.Bitmap
 
-data class WeeklyDataInformation(
-    val day: String,
+data class WeeklyWeatherInformation(
+    val hours: String,
     val image: Bitmap?,
-    val minTemp: Double,
-    val maxTemp: Double,
+    val temp: Double,
     val weatherDescription: String
 )

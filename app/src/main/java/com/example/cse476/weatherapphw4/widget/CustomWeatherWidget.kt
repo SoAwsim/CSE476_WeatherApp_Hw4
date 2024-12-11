@@ -26,29 +26,17 @@ class CustomWeatherWidget(
         this.binding.weatherDescriptionTextView.text = weather
     }
 
-    fun setDayText(day: String) {
-        this.binding.dayTextView.text = day;
+    fun setHourText(hour: String) {
+        this.binding.hourTextView.text = hour
     }
 
-    fun setTemp(minTemp: Double, maxTemp: Double, unit: TempUnit) {
-        val minUnitTemp: Double
-        val maxUnitTemp: Double
-        when (unit){
-            TempUnit.Celsius -> {
-                minUnitTemp = minTemp.kelvinToCelsius()
-                maxUnitTemp = maxTemp.kelvinToCelsius()
-            }
-            TempUnit.Fahrenheit -> {
-                minUnitTemp = minTemp.kelvinToFahrenheit()
-                maxUnitTemp = maxTemp.kelvinToFahrenheit()
-            }
-            TempUnit.Kelvin -> {
-                minUnitTemp = minTemp
-                maxUnitTemp = maxTemp
-            }
+    fun setTemp(temp: Double, unit: TempUnit) {
+        val tempUnit = when (unit) {
+            TempUnit.Celsius -> "${temp.kelvinToCelsius().toUIString()} ℃"
+            TempUnit.Fahrenheit -> "${temp.kelvinToFahrenheit().toUIString()} ℉"
+            TempUnit.Kelvin -> "${temp.toUIString()} K"
         }
-        this.binding.minTempTextView.text = minUnitTemp.toUIString()
-        this.binding.maxTempTextView.text = maxUnitTemp.toUIString()
+        this.binding.tempTextView.text = tempUnit
     }
 
     fun setImage(image: Bitmap?) {

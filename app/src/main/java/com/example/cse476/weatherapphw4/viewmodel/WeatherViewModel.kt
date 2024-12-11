@@ -2,15 +2,11 @@ package com.example.cse476.weatherapphw4.viewmodel
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.icu.util.Calendar
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.cse476.weatherapphw4.extensions.capitalizeEveryWord
-import com.example.cse476.weatherapphw4.extensions.convertFromCalendarEnum
 import com.example.cse476.weatherapphw4.service.LocationService
 import com.example.cse476.weatherapphw4.service.WeatherService
-import com.example.cse476.weatherapphw4.models.ui.WeeklyDataInformation
 import com.example.cse476.weatherapphw4.service.SettingsService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -35,63 +31,56 @@ class WeatherViewModel @Inject constructor(
     private val _todayWeatherBitmapImage = MutableLiveData<Bitmap?>(null)
     val todayWeatherBitmapImage: LiveData<Bitmap?> = this._todayWeatherBitmapImage
 
-    private val _weeklyWeatherInformation = MutableLiveData<List<WeeklyDataInformation>>()
-    val weeklyDataInformation: LiveData<List<WeeklyDataInformation>> = this._weeklyWeatherInformation
+    private val _minTemp = MutableLiveData<Double?>(null)
+    val minTemp : LiveData<Double?> = this._minTemp
+
+    private val _maxTemp = MutableLiveData<Double?>(null)
+    val maxTemp : LiveData<Double?> = this._maxTemp
+
+    private val _feelsLikeTemp = MutableLiveData<Double?>(null)
+    val feelsLikeTemp : LiveData<Double?> = this._feelsLikeTemp
+
+    private val _humidity = MutableLiveData<Double?>(null)
+    val humidity : LiveData<Double?> = this._humidity
+
+    private val _windSpeed = MutableLiveData<Double?>(null)
+    val windSpeed : LiveData<Double?> = this._windSpeed
+
+    private val _windDegree = MutableLiveData<Double?>(null)
+    val windDegree : LiveData<Double?> = this._windDegree
+
+    private val _windGust = MutableLiveData<Double?>(null)
+    val windGust : LiveData<Double?> = this._windGust
+
+    private val _pressure = MutableLiveData<Double?>(null)
+    val pressure : LiveData<Double?> = this._pressure
 
     val tempUnit = this.settingsService.tempUnit
 
     init {
-        this.transformWeatherData()
+        this.getCurrentWeatherData()
     }
 
-    fun transformWeatherData() {
-        val weatherData = this.weatherService.weeklyWeatherMapByDate
-        val calendar = Calendar.getInstance()
-        var weatherCurrentDay = calendar.get(Calendar.DAY_OF_WEEK)
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-
-        var currentWeather = weatherData[weatherCurrentDay]
-        if (currentWeather == null) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-            weatherCurrentDay = calendar.get(Calendar.DAY_OF_WEEK)
-            currentWeather = weatherData[weatherCurrentDay] ?: throw Exception("Illegal state")
-            calendar.add(Calendar.DAY_OF_YEAR, -1)
-        }
-        val currentTimeWeather = currentWeather.firstOrNull {
-            val listCalendar = Calendar.getInstance()
-            listCalendar.timeInMillis = it.dt * 1000L
-            currentHour >= listCalendar.get(Calendar.HOUR_OF_DAY)
-        } ?: currentWeather.first()
-
-        this._todayTemp.value = currentTimeWeather.main.temp
-        this._todayWeatherStatus.value = currentTimeWeather.weather.firstOrNull()?.description
+    fun getCurrentWeatherData() {
+        val weatherData = this.weatherService.currentWeather
+        this._todayTemp.value = weatherData?.main?.temp
+        this._todayWeatherStatus.value = weatherData?.weather?.first()?.description
         this._todayWeatherBitmapImage.value = this.weatherService
-            .iconMap[currentTimeWeather.weather.first().icon]
-
-        val weatherInformationList: MutableList<WeeklyDataInformation> = mutableListOf()
-        for (dayInformation in weatherData) {
-            val weatherEntries = dayInformation.value
-            val minTemp = weatherEntries.map { it.main.temp_min }.min()
-            val maxTemp = weatherEntries.map { it.main.temp_max }.max()
-            val weatherDescription = weatherEntries.map { it.weather.first().description }
-                .first().capitalizeEveryWord()
-            val day = dayInformation.key.convertFromCalendarEnum()
-            val image = this.weatherService
-                .iconMap[weatherEntries.map { it.weather.first().icon }.first()]
-            val weatherInfo = WeeklyDataInformation(
-                day,
-                image,
-                minTemp,
-                maxTemp,
-                weatherDescription
-            )
-            weatherInformationList.add(weatherInfo)
-        }
-        this._weeklyWeatherInformation.value = weatherInformationList
+            .iconMap[weatherData?.weather?.first()?.icon]
+        this._minTemp.value = weatherData?.main?.temp_min
+        this._maxTemp.value = weatherData?.main?.temp_max
+        this._feelsLikeTemp.value = weatherData?.main?.feels_like
+        this._humidity.value = weatherData?.main?.humidity
+        this._windSpeed.value = weatherData?.wind?.speed
+        this._windDegree.value = weatherData?.wind?.deg
+        this._windGust.value = weatherData?.wind?.gust
+        this._pressure.value = weatherData?.main?.pressure
     }
 
     fun triggerTempUpdate() {
         this._todayTemp.value = this._todayTemp.value
-        this._weeklyWeatherInformation.value = this._weeklyWeatherInformation.value
+        this._minTemp.value = this._minTemp.value
+        this._maxTemp.value = this._maxTemp.value
+        this._feelsLikeTemp.value = this._feelsLikeTemp.value
     }
 }
