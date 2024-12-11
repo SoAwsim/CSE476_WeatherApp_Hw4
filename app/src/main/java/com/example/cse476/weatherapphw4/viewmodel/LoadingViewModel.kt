@@ -13,7 +13,9 @@ import com.example.cse476.weatherapphw4.service.LocationService
 import com.example.cse476.weatherapphw4.service.SettingsService
 import com.example.cse476.weatherapphw4.service.WeatherService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -52,8 +54,18 @@ class LoadingViewModel @Inject constructor(
                 return@launch
             }
 
-            weatherService.fetchDataFromApi(this@LoadingViewModel.locationService.location, context)
-            if (this@LoadingViewModel.weatherService.weatherMapByDate.isEmpty())
+            val weeklyWeatherTask = this@LoadingViewModel.weatherService.fetchWeeklyWeatherDataFromApi(
+                this@LoadingViewModel.locationService.location,
+                context,
+                CoroutineScope(Dispatchers.IO)
+            )
+            val currentWeatherTask = this@LoadingViewModel.weatherService.fetchCurrentWeatherDataFromApi(
+                this@LoadingViewModel.locationService.location,
+                context,
+                CoroutineScope(Dispatchers.IO)
+            )
+            awaitAll(weeklyWeatherTask, currentWeatherTask)
+            if (this@LoadingViewModel.weatherService.weeklyWeatherMapByDate.isEmpty())
                 return@launch
             this@LoadingViewModel._isLoading.value = false
         }

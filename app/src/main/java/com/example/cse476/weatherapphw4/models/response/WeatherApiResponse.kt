@@ -1,9 +1,19 @@
 package com.example.cse476.weatherapphw4.models.response
 
-data class WeatherApiResponse(
+data class WeeklyWeatherApiResponse(
     val city: CityResponse,
     val cnt: Int,
     val list: List<WeatherResponse>
+)
+
+data class CurrentWeatherApiResponse(
+    val weather: List<Weather>,
+    val main: Main,
+    val visibility: Int,
+    val wind: Wind,
+    val clouds: Clouds,
+    val dt: Long,
+    val timezone: Long
 )
 
 data class CityResponse(

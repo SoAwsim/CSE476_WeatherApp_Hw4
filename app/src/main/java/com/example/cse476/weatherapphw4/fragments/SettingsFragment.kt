@@ -23,7 +23,6 @@ class SettingsFragment : Fragment() {
     ): View? {
         val binding = FragmentSettingsBinding.inflate(this.layoutInflater)
         this.binding = binding
-""
         binding.tempRadioGroup.setOnCheckedChangeListener { _, id ->
             when (id) {
                 R.id.celsiusButton -> this.model.updateTempUnit(TempUnit.Celsius)

@@ -45,7 +45,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     fun transformWeatherData() {
-        val weatherData = this.weatherService.weatherMapByDate
+        val weatherData = this.weatherService.weeklyWeatherMapByDate
         val calendar = Calendar.getInstance()
         var weatherCurrentDay = calendar.get(Calendar.DAY_OF_WEEK)
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
