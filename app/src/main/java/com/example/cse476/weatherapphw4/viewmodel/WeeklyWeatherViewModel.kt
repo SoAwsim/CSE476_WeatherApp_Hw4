@@ -31,7 +31,7 @@ class WeeklyWeatherViewModel @Inject constructor(
     fun getWeeklyWeatherData() {
         this._isLoading.value = true
         viewModelScope.launch {
-            val weeklyData = this@WeeklyWeatherViewModel.weatherService.weeklyWeatherMapByDate
+            val weeklyData = this@WeeklyWeatherViewModel.weatherService.awaitWeeklyTask()
             val calendar = Calendar.getInstance()
 
             val result: MutableMap<Int, List<WeeklyWeatherInformation>> = mutableMapOf()

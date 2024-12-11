@@ -54,7 +54,7 @@ class LoadingViewModel @Inject constructor(
                 return@launch
             }
 
-            val weeklyWeatherTask = this@LoadingViewModel.weatherService.fetchWeeklyWeatherDataFromApi(
+            this@LoadingViewModel.weatherService.fetchWeeklyWeatherDataFromApi(
                 this@LoadingViewModel.locationService.location,
                 context,
                 CoroutineScope(Dispatchers.IO)
@@ -64,8 +64,8 @@ class LoadingViewModel @Inject constructor(
                 context,
                 CoroutineScope(Dispatchers.IO)
             )
-            awaitAll(weeklyWeatherTask, currentWeatherTask)
-            if (this@LoadingViewModel.weatherService.weeklyWeatherMapByDate.isEmpty())
+            currentWeatherTask.await()
+            if (this@LoadingViewModel.weatherService.currentWeather == null)
                 return@launch
             this@LoadingViewModel._isLoading.value = false
         }

@@ -35,10 +35,17 @@ class WeatherService @Inject constructor() {
     }
 
     var currentWeather: CurrentWeatherApiResponse? = null
-    var weeklyWeatherMapByDate: Map<Int, List<WeatherResponse>> = mapOf()
-        private set
+    private var weeklyWeatherMapByDate: Map<Int, List<WeatherResponse>> = mapOf()
     private val currentImageDownloads: ConcurrentHashMap<String, Object> = ConcurrentHashMap()
     val iconMap: ConcurrentHashMap<String, Bitmap?> = ConcurrentHashMap()
+
+    private var weeklyFetchTask: Deferred<Unit>? = null
+
+    suspend fun awaitWeeklyTask(): Map<Int, List<WeatherResponse>> {
+        this.weeklyFetchTask?.await()
+        this.weeklyFetchTask = null
+        return this.weeklyWeatherMapByDate
+    }
 
     fun fetchCurrentWeatherDataFromApi(
         location: Location?,
@@ -102,64 +109,66 @@ class WeatherService @Inject constructor() {
         location: Location?,
         context: Context,
         scope: CoroutineScope
-    ): Deferred<Unit> = scope.async(Dispatchers.IO) {
-        if (location == null)
-            return@async
-        var reader: BufferedReader? = null
-        try {
-            val connection = URL(
-                WEEKLY_WEATHER_API + "&lat=" + location.latitude + "&lon=" + location.longitude)
-                .openConnection()
-            connection.connect()
-            reader = BufferedReader(InputStreamReader(connection.inputStream))
-            val response = StringBuilder()
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                response.append(line)
-            }
-            val gson = Gson()
-            val parsedResponse = gson.fromJson(response.toString(), WeeklyWeatherApiResponse::class.java)
-            val imagesTaskList: MutableMap<String, Deferred<Bitmap?>> = mutableMapOf()
-            parsedResponse.list.map {
-                for (weather in it.weather) {
-                    val previous = this@WeatherService.currentImageDownloads
-                        .putIfAbsent(weather.icon, Object())
-
-                    if (previous != null)
-                        continue
-
-                    if (this@WeatherService.iconMap.contains(weather.icon)) {
-                        this@WeatherService.currentImageDownloads.remove(weather.icon)
-                        continue
-                    }
-
-                    imagesTaskList.put(
-                        weather.icon,
-                        this@WeatherService.fetchImage(
-                            weather.icon,
-                            context,
-                            scope
-                        )
-                    )
+    ) {
+        this.weeklyFetchTask = scope.async(Dispatchers.IO) {
+            if (location == null)
+                return@async
+            var reader: BufferedReader? = null
+            try {
+                val connection = URL(
+                    WEEKLY_WEATHER_API + "&lat=" + location.latitude + "&lon=" + location.longitude)
+                    .openConnection()
+                connection.connect()
+                reader = BufferedReader(InputStreamReader(connection.inputStream))
+                val response = StringBuilder()
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    response.append(line)
                 }
+                val gson = Gson()
+                val parsedResponse = gson.fromJson(response.toString(), WeeklyWeatherApiResponse::class.java)
+                val imagesTaskList: MutableMap<String, Deferred<Bitmap?>> = mutableMapOf()
+                parsedResponse.list.map {
+                    for (weather in it.weather) {
+                        val previous = this@WeatherService.currentImageDownloads
+                            .putIfAbsent(weather.icon, Object())
+
+                        if (previous != null)
+                            continue
+
+                        if (this@WeatherService.iconMap.contains(weather.icon)) {
+                            this@WeatherService.currentImageDownloads.remove(weather.icon)
+                            continue
+                        }
+
+                        imagesTaskList.put(
+                            weather.icon,
+                            this@WeatherService.fetchImage(
+                                weather.icon,
+                                context,
+                                scope
+                            )
+                        )
+                    }
+                }
+                this@WeatherService.weeklyWeatherMapByDate = parsedResponse.list.sortedBy {
+                    it.dt
+                }.groupBy {
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = it.dt * 1000L
+                    calendar.get(Calendar.DAY_OF_WEEK)
+                }
+                imagesTaskList.map {
+                    val result = it.value.await()
+                    if (result != null)
+                        iconMap.putIfAbsent(it.key, result)
+                    this@WeatherService.currentImageDownloads.remove(it.key)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to get response from API", e)
+            } finally {
+                reader?.close()
             }
-            this@WeatherService.weeklyWeatherMapByDate = parsedResponse.list.sortedBy {
-                it.dt
-            }.groupBy {
-                val calendar = Calendar.getInstance()
-                calendar.timeInMillis = it.dt * 1000L
-                calendar.get(Calendar.DAY_OF_WEEK)
-            }
-            imagesTaskList.map {
-                val result = it.value.await()
-                if (result != null)
-                    iconMap.putIfAbsent(it.key, result)
-                this@WeatherService.currentImageDownloads.remove(it.key)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to get response from API", e)
-        } finally {
-            reader?.close()
         }
     }
 
