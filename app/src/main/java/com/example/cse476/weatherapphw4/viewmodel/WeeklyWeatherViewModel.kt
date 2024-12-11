@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cse476.weatherapphw4.extensions.capitalizeEveryWord
+import com.example.cse476.weatherapphw4.models.response.WeatherResponse
 import com.example.cse476.weatherapphw4.models.ui.WeeklyWeatherInformation
 import com.example.cse476.weatherapphw4.service.SettingsService
 import com.example.cse476.weatherapphw4.service.WeatherService
@@ -27,13 +28,18 @@ class WeeklyWeatherViewModel @Inject constructor(
     val isLoading: LiveData<Boolean> = this._isLoading
 
     val tempUnit = this.settingsService.tempUnit
+    val weeklyServiceData = this.weatherService.weeklyWeatherMapByDate
 
     fun getWeeklyWeatherData() {
         this._isLoading.value = true
         viewModelScope.launch {
-            val weeklyData = this@WeeklyWeatherViewModel.weatherService.awaitWeeklyTask()
-            val calendar = Calendar.getInstance()
+            this@WeeklyWeatherViewModel.weatherService.awaitWeeklyTask()
+        }
+    }
 
+    fun processWeeklyData(weeklyData: Map<Int, List<WeatherResponse>>) {
+        viewModelScope.launch {
+            val calendar = Calendar.getInstance()
             val result: MutableMap<Int, List<WeeklyWeatherInformation>> = mutableMapOf()
             for (dayData in weeklyData) {
                 val day = dayData.key

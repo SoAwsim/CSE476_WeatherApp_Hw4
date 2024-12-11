@@ -5,15 +5,20 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.cse476.weatherapphw4.BuildConfig
+import com.example.cse476.weatherapphw4.models.response.CityResponse
 import com.example.cse476.weatherapphw4.models.response.CurrentWeatherApiResponse
 import com.example.cse476.weatherapphw4.models.response.WeatherResponse
 import com.example.cse476.weatherapphw4.models.response.WeeklyWeatherApiResponse
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -32,19 +37,48 @@ class WeatherService @Inject constructor() {
         private const val CURRENT_WEATHER_API =
             "https://api.openweathermap.org/data/2.5/weather?appid=" + BuildConfig.API_KEY
         private const val WEATHER_IMAGE_API = "https://openweathermap.org/img/wn/"
+        private const val CITY_LOOKUP_API =
+            "https://api.openweathermap.org/geo/1.0/direct?limit=1&appid=" + BuildConfig.API_KEY + "&q="
     }
 
-    var currentWeather: CurrentWeatherApiResponse? = null
-    private var weeklyWeatherMapByDate: Map<Int, List<WeatherResponse>> = mapOf()
+    private val _currentWeather = MutableLiveData<CurrentWeatherApiResponse?>(null)
+    val currentWeather: LiveData<CurrentWeatherApiResponse?> = this._currentWeather
+
+    private val _weeklyWeatherMapByDate = MutableLiveData<Map<Int, List<WeatherResponse>>>(mapOf())
+    val weeklyWeatherMapByDate: LiveData<Map<Int, List<WeatherResponse>>> = this._weeklyWeatherMapByDate
+
     private val currentImageDownloads: ConcurrentHashMap<String, Object> = ConcurrentHashMap()
     val iconMap: ConcurrentHashMap<String, Bitmap?> = ConcurrentHashMap()
 
     private var weeklyFetchTask: Deferred<Unit>? = null
 
-    suspend fun awaitWeeklyTask(): Map<Int, List<WeatherResponse>> {
+    suspend fun awaitWeeklyTask() {
         this.weeklyFetchTask?.await()
         this.weeklyFetchTask = null
-        return this.weeklyWeatherMapByDate
+    }
+
+    suspend fun getCity(city: String): List<CityResponse>? = withContext(Dispatchers.IO) {
+        var reader: BufferedReader? = null
+        try {
+            val connection = URL(
+                CITY_LOOKUP_API + city)
+                .openConnection()
+            connection.connect()
+            reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val response = StringBuilder()
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                response.append(line)
+            }
+            val gson = Gson()
+            val listType = object : TypeToken<List<CityResponse>>() {}.type
+            return@withContext gson.fromJson(response.toString(), listType)
+        } catch (e: Exception) {
+            Log.e(TAG, "City fetch failed!", e)
+        } finally {
+            reader?.close()
+        }
+        return@withContext null
     }
 
     fun fetchCurrentWeatherDataFromApi(
@@ -68,7 +102,7 @@ class WeatherService @Inject constructor() {
             }
             val gson = Gson()
             val parsedResponse = gson.fromJson(response.toString(), CurrentWeatherApiResponse::class.java)
-            this@WeatherService.currentWeather = parsedResponse
+            this@WeatherService._currentWeather.postValue(parsedResponse)
 
             val imagesTaskList: MutableMap<String, Deferred<Bitmap?>> = mutableMapOf()
             for (weather in parsedResponse.weather) {
@@ -151,13 +185,13 @@ class WeatherService @Inject constructor() {
                         )
                     }
                 }
-                this@WeatherService.weeklyWeatherMapByDate = parsedResponse.list.sortedBy {
+                this@WeatherService._weeklyWeatherMapByDate.postValue(parsedResponse.list.sortedBy {
                     it.dt
                 }.groupBy {
                     val calendar = Calendar.getInstance()
                     calendar.timeInMillis = it.dt * 1000L
                     calendar.get(Calendar.DAY_OF_WEEK)
-                }
+                })
                 imagesTaskList.map {
                     val result = it.value.await()
                     if (result != null)

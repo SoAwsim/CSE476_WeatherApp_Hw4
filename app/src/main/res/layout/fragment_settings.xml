@@ -53,5 +53,82 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weather Location"
+            android:layout_margin="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText" />
+        <RadioGroup
+            android:id="@+id/locationRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/currentLocationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:text="Current Location"
+                android:textSize="15sp"
+                tools:ignore="HardcodedText" />
+            <RadioButton
+                android:id="@+id/citySelectButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:text="Enter Location"
+                android:textSize="15sp"
+                tools:ignore="HardcodedText" />
+        </RadioGroup>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/enterCityField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/cityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="City:"
+            android:layout_margin="5dp"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/lon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lon:"
+            android:layout_margin="5dp"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/lat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lat:"
+            android:layout_margin="5dp"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Country:"
+            android:layout_margin="5dp"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText"
+            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

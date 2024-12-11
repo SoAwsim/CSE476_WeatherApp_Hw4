@@ -18,6 +18,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp" >
+            <TextView
+                android:id="@+id/cityCurrentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/todayWeatherImageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="City"
+                android:textSize="25sp"
+                tools:ignore="HardcodedText" />
             <ImageView
                 android:id="@+id/todayWeatherImageView"
                 android:layout_width="0dp"

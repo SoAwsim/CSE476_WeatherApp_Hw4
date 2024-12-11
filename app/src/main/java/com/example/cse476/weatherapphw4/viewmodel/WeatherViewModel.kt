@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.cse476.weatherapphw4.service.LocationService
-import com.example.cse476.weatherapphw4.service.WeatherService
+import com.example.cse476.weatherapphw4.models.response.CurrentWeatherApiResponse
 import com.example.cse476.weatherapphw4.service.SettingsService
+import com.example.cse476.weatherapphw4.service.WeatherService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -15,13 +15,8 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     application: Application,
     private val weatherService: WeatherService,
-    private val locationService: LocationService,
     private val settingsService: SettingsService
 ) : AndroidViewModel(application) {
-    companion object {
-        const val TAG = "WeatherViewModel"
-    }
-
     private val _todayTemp = MutableLiveData<Double?>(null)
     val todayTemp : LiveData<Double?> = this._todayTemp
 
@@ -55,14 +50,13 @@ class WeatherViewModel @Inject constructor(
     private val _pressure = MutableLiveData<Double?>(null)
     val pressure : LiveData<Double?> = this._pressure
 
+    private val _city = MutableLiveData<String?>(null)
+    val city : LiveData<String?> = this._city
+
     val tempUnit = this.settingsService.tempUnit
+    val currentWeatherData = this.weatherService.currentWeather
 
-    init {
-        this.getCurrentWeatherData()
-    }
-
-    fun getCurrentWeatherData() {
-        val weatherData = this.weatherService.currentWeather
+    fun setCurrentWeatherData(weatherData: CurrentWeatherApiResponse?) {
         this._todayTemp.value = weatherData?.main?.temp
         this._todayWeatherStatus.value = weatherData?.weather?.first()?.description
         this._todayWeatherBitmapImage.value = this.weatherService
@@ -75,6 +69,7 @@ class WeatherViewModel @Inject constructor(
         this._windDegree.value = weatherData?.wind?.deg
         this._windGust.value = weatherData?.wind?.gust
         this._pressure.value = weatherData?.main?.pressure
+        this._city.value = weatherData?.name
     }
 
     fun triggerTempUpdate() {

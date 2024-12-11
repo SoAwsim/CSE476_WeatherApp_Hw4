@@ -13,7 +13,8 @@ data class CurrentWeatherApiResponse(
     val wind: Wind,
     val clouds: Clouds,
     val dt: Long,
-    val timezone: Long
+    val timezone: Long,
+    val name: String
 )
 
 data class CityResponse(

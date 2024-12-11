@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.cse476.weatherapphw4.enums.LocationType
 import com.example.cse476.weatherapphw4.network.NetworkMonitor
 import com.example.cse476.weatherapphw4.service.LocationService
 import com.example.cse476.weatherapphw4.service.SettingsService
@@ -60,7 +61,7 @@ class LoadingViewModel @Inject constructor(
             this@LoadingViewModel.getBestLocation(context)
             if (this@LoadingViewModel.locationService.location == null) {
                 Log.e(TAG, "Location service failed!")
-                this@LoadingViewModel._errorMessage.value = "Location fetching failed!";
+                this@LoadingViewModel._errorMessage.value = "Location fetching failed!"
                 return@withPermit
             }
 
@@ -75,7 +76,7 @@ class LoadingViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.IO)
             )
             currentWeatherTask.await()
-            if (this@LoadingViewModel.weatherService.currentWeather == null) {
+            if (this@LoadingViewModel.weatherService.currentWeather.value == null) {
                 this@LoadingViewModel._errorMessage.value = "Failed to fetch data from api!"
                 return@withPermit
             }
@@ -84,6 +85,11 @@ class LoadingViewModel @Inject constructor(
     }
 
     suspend fun getBestLocation(context: Context) = withContext(Dispatchers.Main) {
+        if (this@LoadingViewModel.settingsService.locationType.value == LocationType.City) {
+            this@LoadingViewModel.locationService.location = this@LoadingViewModel.settingsService.cityLocation.value
+            return@withContext
+        }
+
         val gpsLocation = try {
             this@LoadingViewModel.locationService.getCurrentLocation(context, LocationManager.GPS_PROVIDER)
         } catch (e: Exception) {

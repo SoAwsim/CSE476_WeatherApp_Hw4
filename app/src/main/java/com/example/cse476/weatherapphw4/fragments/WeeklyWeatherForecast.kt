@@ -28,6 +28,10 @@ class WeeklyWeatherForecast : Fragment() {
         val binding = FragmentWeeklyWeatherForecastBinding.inflate(this.layoutInflater)
         this.binding = binding
 
+        this.model.weeklyServiceData.observe(viewLifecycleOwner) { serviceData ->
+            this.model.processWeeklyData(serviceData)
+        }
+
         this.model.weeklyWeatherInformation.observe(viewLifecycleOwner) { weeklyData ->
             if (weeklyData.isEmpty()) {
                 this.model.getWeeklyWeatherData()

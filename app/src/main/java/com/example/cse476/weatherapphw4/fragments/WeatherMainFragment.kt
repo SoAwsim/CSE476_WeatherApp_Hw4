@@ -97,30 +97,16 @@ class WeatherMainFragment : Fragment() {
             binding.pressureTextView.text = "Pressure: ${"${pressure?.toUIString() ?: "NaN"} hPa"}"
         }
 
-//        this.model.weeklyDataInformation.observe(viewLifecycleOwner) { weeklyData ->
-//            this.binding?.weatherWidgetContainer?.removeAllViews()
-//            for (data in weeklyData) {
-//                val params = LinearLayout.LayoutParams(
-//                    LinearLayout.LayoutParams.MATCH_PARENT,
-//                    LinearLayout.LayoutParams.WRAP_CONTENT
-//                )
-//                params.setMargins(5, 5, 5, 5)
-//                val weatherWidget = CustomWeatherWidget(this.requireContext(), null)
-//                weatherWidget.layoutParams = params
-//                weatherWidget.setDayText(data.day)
-//                weatherWidget.setTemp(
-//                    data.minTemp,
-//                    data.maxTemp,
-//                    this.model.tempUnit.value ?: TempUnit.Celsius
-//                )
-//                weatherWidget.setWeatherText(data.weatherDescription)
-//                weatherWidget.setImage(data.image)
-//                this.binding?.weatherWidgetContainer?.addView(weatherWidget)
-//            }
-//        }
-
         this.model.tempUnit.observe(viewLifecycleOwner) {
             this.model.triggerTempUpdate()
+        }
+
+        this.model.currentWeatherData.observe(viewLifecycleOwner) { data ->
+            this.model.setCurrentWeatherData(data)
+        }
+
+        this.model.city.observe(viewLifecycleOwner) { city ->
+            binding.cityCurrentName.text = city
         }
 
         return this.binding?.root
