@@ -6,7 +6,12 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/sunny_icon"
         android:title="Current Weather" />
-
+    <item
+        android:id="@+id/weeklyWeatherForecastFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/calendar_icon"
+        android:title="Weekly Forecast" />
     <item
         android:id="@+id/settingsFragment"
         android:layout_width="wrap_content"
