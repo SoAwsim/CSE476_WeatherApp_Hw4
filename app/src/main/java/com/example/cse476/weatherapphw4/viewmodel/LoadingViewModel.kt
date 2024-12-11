@@ -15,8 +15,9 @@ import com.example.cse476.weatherapphw4.service.WeatherService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -45,13 +46,22 @@ class LoadingViewModel @Inject constructor(
     private val _isLoading = MutableLiveData(true)
     val isLoading: LiveData<Boolean> = this._isLoading
 
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = this._errorMessage
+
+    private val initializeSemaphore = Semaphore(1)
+
     fun initializeDataFromLocation() {
-        viewModelScope.launch {
+        viewModelScope.launch { initializeSemaphore.withPermit {
+            if (this@LoadingViewModel._isLoading.value == false || this@LoadingViewModel._errorMessage.value != null)
+                return@withPermit
+
             val context = this@LoadingViewModel.getApplication<Application>().applicationContext
             this@LoadingViewModel.getBestLocation(context)
             if (this@LoadingViewModel.locationService.location == null) {
                 Log.e(TAG, "Location service failed!")
-                return@launch
+                this@LoadingViewModel._errorMessage.value = "Location fetching failed!";
+                return@withPermit
             }
 
             this@LoadingViewModel.weatherService.fetchWeeklyWeatherDataFromApi(
@@ -65,10 +75,12 @@ class LoadingViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.IO)
             )
             currentWeatherTask.await()
-            if (this@LoadingViewModel.weatherService.currentWeather == null)
-                return@launch
+            if (this@LoadingViewModel.weatherService.currentWeather == null) {
+                this@LoadingViewModel._errorMessage.value = "Failed to fetch data from api!"
+                return@withPermit
+            }
             this@LoadingViewModel._isLoading.value = false
-        }
+        } }
     }
 
     suspend fun getBestLocation(context: Context) = withContext(Dispatchers.Main) {
@@ -108,5 +120,9 @@ class LoadingViewModel @Inject constructor(
         } else {
             Log.e(TAG, "Location was not found!")
         }
+    }
+
+    fun clearErrorMessage() {
+        this._errorMessage.value = null
     }
 }

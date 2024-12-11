@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -39,12 +40,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         this.model.networkState.observe(this) { connected ->
+            if (this.model.errorMessage.value != null) {
+                this.binding.progressStatus.text = "Error!"
+                return@observe
+            }
+
             if (connected) {
                 this.binding.progressStatus.text = "Connected fetching data from API"
-                locationProvided()
+                this.locationProvided()
             } else {
                 this.binding.progressStatus.text = "Waiting for connection"
             }
+        }
+
+        this.model.errorMessage.observe(this) { message ->
+            if (message == null) {
+                this.binding.errorMessageTextView.visibility = View.GONE
+                this.binding.retryButton.visibility = View.GONE
+                return@observe
+            }
+
+            this.binding.errorMessageTextView.visibility = View.VISIBLE
+            this.binding.retryButton.visibility = View.VISIBLE
+            this.binding.errorMessageTextView.text = message
+            this.binding.progressStatus.text = "Error!"
         }
 
         this.model.isLoading.observe(this) { loading ->
@@ -54,6 +73,15 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, WeatherActivity::class.java)
             this.startActivity(intent)
             this.finish()
+        }
+
+        this.binding.retryButton.setOnClickListener {
+            this.model.clearErrorMessage()
+            this.binding.progressStatus.text = if (this.model.networkState.value == true)
+                "Connected fetching data from API"
+            else
+                "Waiting for connection"
+            this.locationProvided()
         }
     }
 
