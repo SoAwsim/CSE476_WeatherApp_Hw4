@@ -1,5 +1,15 @@
 import java.util.Properties
 
+val apiKeyFile = project.rootProject.file("apikey.properties")
+val apiKeyFileTemplate = project.rootProject.file("apikey.properties.template")
+
+if (apiKeyFile.exists()) {
+    println("apikey.properties already exist")
+} else {
+    apiKeyFile.writeText(apiKeyFileTemplate.readText())
+    println("apikey.properties has been created from the apikey.properties.template")
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,9 +28,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        val keystoreFile = project.rootProject.file("api.properties")
         val properties = Properties()
-        properties.load(keystoreFile.inputStream())
+        properties.load(apiKeyFile.inputStream())
         val apiKey = properties.getProperty("API_KEY") ?: ""
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
